@@ -1,7 +1,7 @@
 Storm Elasticity Scheduler
 ==========================
 
-TBD...
+Extending Elasticity
 
 Compiling
 * mvn package
