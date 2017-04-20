@@ -219,10 +219,11 @@ public class GetStats {
 					// get transfer info
 					Map<String, Map<String, Long>> transfer = executorStats
 							.get_transferred();
+					LOG.info("!!! - Get Transferred Size = {}", executorStats.get_transferred_size());
 					// get emit info
 					Map<String, Map<String, Long>> emit = executorStats
 							.get_emitted();
-
+					LOG.info("!!! - Get Emitted Size = {}", executorStats.get_emitted_size());
 					if (transfer.get(":all-time").get("default") != null
 							&& emit.get(":all-time").get("default") != null) {
 						// getting task hash
