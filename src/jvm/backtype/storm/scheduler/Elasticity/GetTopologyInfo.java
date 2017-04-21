@@ -1,6 +1,5 @@
 package backtype.storm.scheduler.Elasticity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,23 +19,19 @@ import backtype.storm.generated.Nimbus;
 import backtype.storm.generated.NotAliveException;
 import backtype.storm.generated.SpoutSpec;
 import backtype.storm.generated.StormTopology;
-import backtype.storm.generated.StreamInfo;
 import backtype.storm.generated.TopologySummary;
-import backtype.storm.scheduler.ExecutorDetails;
 
 public class GetTopologyInfo {
 
 	// private static GetTopologyInfo instance = null;
-	private HashMap<String, Component> bolts = null;
-	private HashMap<String, Component> spouts = null;
+
 	public HashMap<String, Component> all_comp = null;
+	public int numWorkers = 0;
 
 	private static final Logger LOG = LoggerFactory
 			.getLogger(GetTopologyInfo.class);
 
 	public GetTopologyInfo() {
-		this.bolts = new HashMap<String, Component>();
-		this.spouts = new HashMap<String, Component>();
 		this.all_comp = new HashMap<String, Component>();
 	}
 
@@ -57,6 +52,10 @@ public class GetTopologyInfo {
 				if (topo.get_id().equals(topoId) == true){
 					StormTopology storm_topo = client
 							.getTopology(topo.get_id());
+					
+					this.numWorkers = topo.get_num_workers();
+					
+					//LOG.info("Topology: {} conf->{}",topo.get_name(), client.getTopologyConf(topo.get_id()));
 					// spouts
 					for (Map.Entry<String, SpoutSpec> s : storm_topo
 							.get_spouts().entrySet()) {
@@ -70,6 +69,7 @@ public class GetTopologyInfo {
 								this.all_comp.put(s.getKey(), newComp);
 							}
 
+							
 							for (Map.Entry<GlobalStreamId, Grouping> entry : s
 									.getValue().get_common().get_inputs()
 									.entrySet()) {
@@ -105,12 +105,21 @@ public class GetTopologyInfo {
 								newComp = new Component(s.getKey());
 								this.all_comp.put(s.getKey(), newComp);
 							}
+//							LOG.info("get_common: {}",s.getValue().get_common());
+//							LOG.info("Streams: {}",s.getValue().get_common().get_streams());
+//							for(Map.Entry<String, StreamInfo> entry : s.getValue().get_common().get_streams().entrySet()){
+//								LOG.info("Key: {} Value: {}", entry.getKey(), entry.getValue());
+//								LOG.info("outputFields: {}", entry.getValue().get_output_fields());
+//							
+//							}
+//							LOG.info("INputs: {}",s.getValue().get_common().get_inputs());
 							for (Map.Entry<GlobalStreamId, Grouping> entry : s
 									.getValue().get_common().get_inputs()
 									.entrySet()) {
 								if (entry.getKey().get_componentId()
 										.matches("(__).*") == false) {
-
+									//LOG.info("ComponentID: {} --- {}",entry.getKey().get_componentId(), entry.getValue());
+									
 									newComp.parents.add(entry.getKey()
 											.get_componentId());
 									if (this.all_comp.containsKey(entry
