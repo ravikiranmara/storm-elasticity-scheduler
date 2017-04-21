@@ -184,6 +184,7 @@ public class GetStats {
 		TSocket tsocket = new TSocket("localhost", 6627);
 		TFramedTransport tTransport = new TFramedTransport(tsocket);
 		TBinaryProtocol tBinaryProtocol = new TBinaryProtocol(tTransport);
+		LOG.info("Did we make it this far???");
 		Nimbus.Client client = new Nimbus.Client(tBinaryProtocol);
 
 		try {
